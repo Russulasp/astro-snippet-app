@@ -169,7 +169,9 @@ const latest = [...snippets].sort(
     </div>
   </section>
 
-  <script>
+  <script type="module">
+    import { setupCopyButtons } from "../lib/copy";
+
     document.addEventListener("DOMContentLoaded", () => {
       const searchInput = document.querySelector<HTMLInputElement>("#search");
       const categorySelect = document.querySelector<HTMLSelectElement>("#category");
@@ -204,25 +206,7 @@ const latest = [...snippets].sort(
       [searchInput, categorySelect, typeSelect].forEach((el) => el?.addEventListener("input", applyFilters));
       applyFilters();
 
-      const copyButtons = document.querySelectorAll<HTMLButtonElement>(".copy-btn");
-      copyButtons.forEach((button) => {
-        button.addEventListener("click", async () => {
-          const code = button.dataset.copyCode ?? "";
-          const label = button.querySelector<HTMLElement>(".copy-label");
-          const original = label?.textContent ?? "コピー";
-          try {
-            await navigator.clipboard.writeText(code);
-            if (label) label.textContent = "コピーしました";
-            button.classList.add("ring", "ring-indigo-300/40");
-            setTimeout(() => {
-              if (label) label.textContent = original;
-              button.classList.remove("ring", "ring-indigo-300/40");
-            }, 1500);
-          } catch (error) {
-            if (label) label.textContent = "コピーに失敗";
-          }
-        });
-      });
+      setupCopyButtons();
     });
   </script>
 </BaseLayout>
