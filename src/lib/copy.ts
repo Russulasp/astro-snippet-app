@@ -105,3 +105,12 @@ export const setupCopyButtons = () => {
     button.addEventListener("click", () => handleCopyClick(button));
   });
 };
+
+const initCopyButtons = () => {
+  setupCopyButtons();
+};
+
+if (typeof document !== "undefined") {
+  document.addEventListener("DOMContentLoaded", initCopyButtons);
+  document.addEventListener("astro:page-load", initCopyButtons);
+}

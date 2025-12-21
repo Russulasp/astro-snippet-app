@@ -170,8 +170,6 @@ const latest = [...snippets].sort(
   </section>
 
   <script type="module">
-    import { setupCopyButtons } from "../lib/copy";
-
     document.addEventListener("DOMContentLoaded", () => {
       const searchInput = document.querySelector<HTMLInputElement>("#search");
       const categorySelect = document.querySelector<HTMLSelectElement>("#category");
@@ -206,7 +204,6 @@ const latest = [...snippets].sort(
       [searchInput, categorySelect, typeSelect].forEach((el) => el?.addEventListener("input", applyFilters));
       applyFilters();
 
-      setupCopyButtons();
     });
   </script>
 </BaseLayout>
