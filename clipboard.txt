@@ -1,122 +1,86 @@
+diff --git a/src/layouts/BaseLayout.astro b/src/layouts/BaseLayout.astro
+index 358f97a3fbe2dd5a3712018c7a026aec366f0503..084b6a262a0770306b2200f4e3eb7b2fedc70b5a 100644
+--- a/src/layouts/BaseLayout.astro
++++ b/src/layouts/BaseLayout.astro
+@@ -1,32 +1,34 @@
+ ---
+ import type { AstroComponentFactory } from "astro";
+ import "../styles/global.css";
++import copyScript from "../lib/copy.ts?url";
+ 
+ const { title = "Astro Snippet Library", description = "Astro + Tailwind で作る静的スニペット集" } = Astro.props as {
+   title?: string;
+   description?: string;
+   children?: AstroComponentFactory;
+ };
+ ---
+ <!doctype html>
+ <html lang="ja" class="scroll-smooth">
+   <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1" />
+     <title>{title}</title>
+     <meta name="description" content={description} />
+   </head>
+   <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
+     <div class="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-br from-indigo-900/40 via-slate-900 to-slate-950"></div>
+     <div class="pointer-events-none fixed inset-x-10 top-16 -z-10 h-72 rounded-full bg-gradient-to-r from-indigo-600/30 via-fuchsia-500/20 to-cyan-500/30 blur-3xl"></div>
+     <main class="mx-auto flex max-w-6xl flex-col gap-12 px-6 pb-16 pt-10 sm:pt-14">
+       <slot />
+     </main>
+     <footer class="mx-auto max-w-6xl px-6 pb-10">
+       <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-200/80">
+         <p class="font-semibold text-white">Astro Snippet Library</p>
+         <p class="mt-2">CSV データを静的ビルドで読み込み、検索・コピーできるミニマル実装です。</p>
+       </div>
+     </footer>
++    <script type="module" src={copyScript}></script>
+   </body>
+ </html>
 diff --git a/src/lib/copy.ts b/src/lib/copy.ts
-new file mode 100644
-index 0000000000000000000000000000000000000000..a5bd6ccf2701a988fde89a2eb86b9620768263fe
---- /dev/null
+index a5bd6ccf2701a988fde89a2eb86b9620768263fe..fde841bb97daff910a6a20f7d29bc8e69b914967 100644
+--- a/src/lib/copy.ts
 +++ b/src/lib/copy.ts
-@@ -0,0 +1,107 @@
-+const ensureToastContainer = () => {
-+  let container = document.querySelector<HTMLElement>("#copy-toast-container");
-+  if (!container) {
-+    container = document.createElement("div");
-+    container.id = "copy-toast-container";
-+    container.className = "pointer-events-none fixed top-5 right-5 z-50 flex flex-col gap-2";
-+    document.body.appendChild(container);
-+  }
-+  return container;
+@@ -83,25 +83,34 @@ const handleCopyClick = async (button: HTMLButtonElement) => {
+   if (copied) {
+     if (label) label.textContent = "Copied!";
+     button.classList.add("ring", "ring-emerald-300/40");
+     showToast("Copied!");
+     resetLabel(2000);
+     setTimeout(() => {
+       button.classList.remove("ring", "ring-emerald-300/40");
+     }, 2000);
+     return;
+   }
+ 
+   showToast("コピーできませんでした。長押しで選択・コピーしてください。", "error");
+   if (label) label.textContent = "コピーに失敗";
+   resetLabel(2500);
+   manualPromptFallback(code);
+ };
+ 
+ export const setupCopyButtons = () => {
+   const copyButtons = document.querySelectorAll<HTMLButtonElement>(".copy-btn");
+   copyButtons.forEach((button) => {
+     if (button.dataset.copyBound === "true") return;
+     button.dataset.copyBound = "true";
+     button.addEventListener("click", () => handleCopyClick(button));
+   });
+ };
++
++const initCopyButtons = () => {
++  setupCopyButtons();
 +};
 +
-+const showToast = (message: string, variant: "success" | "error" = "success") => {
-+  const container = ensureToastContainer();
-+  const toast = document.createElement("div");
-+  toast.textContent = message;
-+  toast.className = `pointer-events-auto rounded-full px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-black/20 transition duration-200 ${variant === "error" ? "bg-red-500" : "bg-emerald-500"}`;
-+  container.appendChild(toast);
-+
-+  requestAnimationFrame(() => {
-+    toast.classList.add("opacity-100");
-+  });
-+
-+  setTimeout(() => {
-+    toast.classList.add("opacity-0", "translate-y-1");
-+  }, 1500);
-+
-+  setTimeout(() => {
-+    toast.remove();
-+  }, 2000);
-+};
-+
-+const writeWithClipboardApi = async (text: string) => {
-+  if (!navigator.clipboard || !navigator.clipboard.writeText) return false;
-+  try {
-+    await navigator.clipboard.writeText(text);
-+    return true;
-+  } catch (error) {
-+    return false;
-+  }
-+};
-+
-+const legacyCopy = (text: string) => {
-+  const textarea = document.createElement("textarea");
-+  textarea.value = text;
-+  textarea.setAttribute("readonly", "true");
-+  textarea.style.position = "fixed";
-+  textarea.style.top = "-9999px";
-+  document.body.appendChild(textarea);
-+  textarea.focus();
-+  textarea.select();
-+
-+  let copied = false;
-+  try {
-+    copied = document.execCommand("copy");
-+  } catch (error) {
-+    copied = false;
-+  }
-+
-+  document.body.removeChild(textarea);
-+  return copied;
-+};
-+
-+const manualPromptFallback = (text: string) => {
-+  window.prompt("コピーできない場合は、以下のテキストを選択してコピーしてください", text);
-+};
-+
-+const handleCopyClick = async (button: HTMLButtonElement) => {
-+  const code = button.dataset.copyCode ?? "";
-+  const label = button.querySelector<HTMLElement>(".copy-label");
-+  const originalLabel = label?.textContent ?? "コピー";
-+
-+  if (label) label.textContent = "Copying...";
-+  let resetTimer = 0;
-+  const resetLabel = (duration: number) => {
-+    window.clearTimeout(resetTimer);
-+    resetTimer = window.setTimeout(() => {
-+      if (label) label.textContent = originalLabel;
-+    }, duration);
-+  };
-+
-+  const copied = (await writeWithClipboardApi(code)) || legacyCopy(code);
-+
-+  if (copied) {
-+    if (label) label.textContent = "Copied!";
-+    button.classList.add("ring", "ring-emerald-300/40");
-+    showToast("Copied!");
-+    resetLabel(2000);
-+    setTimeout(() => {
-+      button.classList.remove("ring", "ring-emerald-300/40");
-+    }, 2000);
-+    return;
-+  }
-+
-+  showToast("コピーできませんでした。長押しで選択・コピーしてください。", "error");
-+  if (label) label.textContent = "コピーに失敗";
-+  resetLabel(2500);
-+  manualPromptFallback(code);
-+};
-+
-+export const setupCopyButtons = () => {
-+  const copyButtons = document.querySelectorAll<HTMLButtonElement>(".copy-btn");
-+  copyButtons.forEach((button) => {
-+    if (button.dataset.copyBound === "true") return;
-+    button.dataset.copyBound = "true";
-+    button.addEventListener("click", () => handleCopyClick(button));
-+  });
-+};
++if (typeof document !== "undefined") {
++  document.addEventListener("DOMContentLoaded", initCopyButtons);
++  document.addEventListener("astro:page-load", initCopyButtons);
++}
 diff --git a/src/pages/index.astro b/src/pages/index.astro
-index 6fa29f2c7b57e58b47f5563a1aa0cbfd8be7f654..c3fb77f1ed4480b956789da38c52afa49795cfd1 100644
+index c3fb77f1ed4480b956789da38c52afa49795cfd1..802f0fb1bab2ed54ee6902152cb493bb3729387a 100644
 --- a/src/pages/index.astro
 +++ b/src/pages/index.astro
-@@ -147,82 +147,66 @@ const latest = [...snippets].sort(
-           <div class="flex items-center justify-between">
+@@ -148,65 +148,62 @@ const latest = [...snippets].sort(
              <h3 class="text-lg font-semibold">{category}</h3>
              <span class="rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-semibold text-indigo-50 ring-1 ring-indigo-300/40">{items.length} 件</span>
            </div>
@@ -141,10 +105,9 @@ index 6fa29f2c7b57e58b47f5563a1aa0cbfd8be7f654..c3fb77f1ed4480b956789da38c52afa4
      </div>
    </section>
  
--  <script>
-+  <script type="module">
-+    import { setupCopyButtons } from "../lib/copy";
-+
+   <script type="module">
+-    import { setupCopyButtons } from "../lib/copy";
+-
      document.addEventListener("DOMContentLoaded", () => {
        const searchInput = document.querySelector<HTMLInputElement>("#search");
        const categorySelect = document.querySelector<HTMLSelectElement>("#category");
@@ -179,34 +142,15 @@ index 6fa29f2c7b57e58b47f5563a1aa0cbfd8be7f654..c3fb77f1ed4480b956789da38c52afa4
        [searchInput, categorySelect, typeSelect].forEach((el) => el?.addEventListener("input", applyFilters));
        applyFilters();
  
--      const copyButtons = document.querySelectorAll<HTMLButtonElement>(".copy-btn");
--      copyButtons.forEach((button) => {
--        button.addEventListener("click", async () => {
--          const code = button.dataset.copyCode ?? "";
--          const label = button.querySelector<HTMLElement>(".copy-label");
--          const original = label?.textContent ?? "コピー";
--          try {
--            await navigator.clipboard.writeText(code);
--            if (label) label.textContent = "コピーしました";
--            button.classList.add("ring", "ring-indigo-300/40");
--            setTimeout(() => {
--              if (label) label.textContent = original;
--              button.classList.remove("ring", "ring-indigo-300/40");
--            }, 1500);
--          } catch (error) {
--            if (label) label.textContent = "コピーに失敗";
--          }
--        });
--      });
-+      setupCopyButtons();
+-      setupCopyButtons();
      });
    </script>
  </BaseLayout>
 diff --git a/src/pages/snippets/[slug].astro b/src/pages/snippets/[slug].astro
-index 1c8c7d5781fbac3d97fc342d8f5e807d1e895a4a..2adf30671692cabf8138f027b7ee8cc61af8c368 100644
+index 2adf30671692cabf8138f027b7ee8cc61af8c368..b54eb0fa20cad112332f6de061ff5753dc54f328 100644
 --- a/src/pages/snippets/[slug].astro
 +++ b/src/pages/snippets/[slug].astro
-@@ -57,49 +57,33 @@ const related = snippets
+@@ -57,33 +57,26 @@ const related = snippets
        </div>
      </div>
  
@@ -232,31 +176,11 @@ index 1c8c7d5781fbac3d97fc342d8f5e807d1e895a4a..2adf30671692cabf8138f027b7ee8cc6
      )}
    </section>
  
--  <script>
-+  <script type="module">
-+    import { setupCopyButtons } from "../../lib/copy";
-+
-     document.addEventListener("DOMContentLoaded", () => {
--      const copyButtons = document.querySelectorAll<HTMLButtonElement>(".copy-btn");
--      copyButtons.forEach((button) => {
--        button.addEventListener("click", async () => {
--          const code = button.dataset.copyCode ?? "";
--          const label = button.querySelector<HTMLElement>(".copy-label");
--          const original = label?.textContent ?? "コピー";
--          try {
--            await navigator.clipboard.writeText(code);
--            if (label) label.textContent = "コピーしました";
--            button.classList.add("ring", "ring-indigo-300/40");
--            setTimeout(() => {
--              if (label) label.textContent = original;
--              button.classList.remove("ring", "ring-indigo-300/40");
--            }, 1500);
--          } catch (error) {
--            if (label) label.textContent = "コピーに失敗";
--          }
--        });
--      });
-+      setupCopyButtons();
-     });
-   </script>
+-  <script type="module">
+-    import { setupCopyButtons } from "../../lib/copy";
+-
+-    document.addEventListener("DOMContentLoaded", () => {
+-      setupCopyButtons();
+-    });
+-  </script>
  </BaseLayout>
