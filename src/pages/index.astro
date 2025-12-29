@@ -110,6 +110,7 @@ const modalSnippets = snippets.map((snippet) => ({
                 data-code={snippet.code.toLowerCase()}
                 data-category={snippet.category}
                 data-type={snippet.type}
+                data-snippet-id={snippet.slug}
                 data-display="table-row"
               >
                 <td class="px-4 py-3 font-semibold text-white">{snippet.title}</td>
@@ -258,7 +259,7 @@ const modalSnippets = snippets.map((snippet) => ({
         const category = categorySelect?.value ?? "";
         const type = typeSelect?.value ?? "";
 
-        let visible = 0;
+        const visibleSnippets = new Set();
         cards.forEach((card) => {
           const matchesKeyword = keyword
             ? ["title", "description", "tags", "code"].some((field) =>
@@ -270,15 +271,17 @@ const modalSnippets = snippets.map((snippet) => ({
           const show = matchesKeyword && matchesCategory && matchesType;
           const display = card.dataset.display ?? "block";
           card.style.display = show ? display : "none";
-          if (show) visible += 1;
+          if (show && card.dataset.snippetId) {
+            visibleSnippets.add(card.dataset.snippetId);
+          }
         });
 
         if (resultCount) {
-          resultCount.textContent = `${visible} 件ヒット`;
+          resultCount.textContent = `${visibleSnippets.size} 件ヒット`;
         }
 
         if (emptyState) {
-          emptyState.classList.toggle("hidden", visible !== 0);
+          emptyState.classList.toggle("hidden", visibleSnippets.size !== 0);
         }
       };
 
