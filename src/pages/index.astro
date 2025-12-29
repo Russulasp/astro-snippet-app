@@ -369,6 +369,7 @@ const modalSnippets = snippets.map((snippet) => ({
       const resetButton = document.querySelector("#reset-filters");
       const clearButtons = Array.from(document.querySelectorAll("[data-clear-field]"));
       const clearAllButton = document.querySelector("#clear-all-filters");
+      const snippetDataElement = document.querySelector("#snippet-data");
 
       const toTimestamp = (value) => {
         const time = Date.parse(value ?? "");
@@ -419,11 +420,97 @@ const modalSnippets = snippets.map((snippet) => ({
         sortedRows.forEach((item) => tableBody?.appendChild(item));
       };
 
+      const snippets = snippetDataElement?.textContent ? JSON.parse(snippetDataElement.textContent) : [];
+      const snippetMap = new Map(snippets.map((snippet) => [snippet.slug, snippet]));
+      const preparedSnippets = snippets.map((snippet) => ({
+        ...snippet,
+        searchText: [snippet.title, snippet.description, snippet.code, snippet.tags.join(" ")]
+          .join(" ")
+          .toLowerCase(),
+        tagText: snippet.tags.join(" ").toLowerCase(),
+      }));
+
+      const buildFilterState = () => ({
+        keyword: searchInput?.value.trim().toLowerCase() ?? "",
+        category: categorySelect?.value ?? "",
+        type: typeSelect?.value ?? "",
+        tag: tagSelect?.value.toLowerCase() ?? "",
+      });
+
+      const updateSelectOptions = (select, placeholder, options, currentValue) => {
+        if (!select) return currentValue;
+        const sorted = Array.from(options).sort((a, b) => a.localeCompare(b, "ja"));
+        const nextValue = options.has(currentValue) ? currentValue : "";
+        const optionNodes = [
+          Object.assign(document.createElement("option"), {
+            value: "",
+            textContent: placeholder,
+          }),
+          ...sorted.map((value) =>
+            Object.assign(document.createElement("option"), {
+              value,
+              textContent: value,
+              selected: value === nextValue,
+            }),
+          ),
+        ];
+        select.replaceChildren(...optionNodes);
+        if (select.value !== nextValue) select.value = nextValue;
+        return nextValue;
+      };
+
+      const updateFilterOptions = (state) => {
+        const refreshOptions = (currentState) => {
+          const keywordMatch = (snippet) =>
+            currentState.keyword ? snippet.searchText.includes(currentState.keyword) : true;
+          const tagMatch = (snippet) =>
+            currentState.tag ? snippet.tagText.includes(currentState.tag) : true;
+          const typeMatch = (snippet) =>
+            currentState.type ? snippet.type === currentState.type : true;
+          const categoryMatch = (snippet) =>
+            currentState.category ? snippet.category === currentState.category : true;
+
+          const availableCategories = new Set(
+            preparedSnippets
+              .filter((snippet) => keywordMatch(snippet) && typeMatch(snippet) && tagMatch(snippet))
+              .map((snippet) => snippet.category),
+          );
+          const availableTypes = new Set(
+            preparedSnippets
+              .filter((snippet) => keywordMatch(snippet) && categoryMatch(snippet) && tagMatch(snippet))
+              .map((snippet) => snippet.type),
+          );
+
+          const nextCategory = updateSelectOptions(
+            categorySelect,
+            "すべてのカテゴリー",
+            availableCategories,
+            currentState.category,
+          );
+          const nextType = updateSelectOptions(
+            typeSelect,
+            "すべてのタイプ",
+            availableTypes,
+            currentState.type,
+          );
+
+          return {
+            ...currentState,
+            category: nextCategory,
+            type: nextType,
+          };
+        };
+
+        let nextState = refreshOptions(state);
+        if (nextState.category !== state.category || nextState.type !== state.type) {
+          nextState = refreshOptions(nextState);
+        }
+        return nextState;
+      };
+
       const applyFilters = () => {
-        const keyword = searchInput?.value.trim().toLowerCase() ?? "";
-        const category = categorySelect?.value ?? "";
-        const type = typeSelect?.value ?? "";
-        const tag = tagSelect?.value.toLowerCase() ?? "";
+        const state = updateFilterOptions(buildFilterState());
+        const { keyword, category, type, tag } = state;
 
         const visibleSnippets = new Set();
         cards.forEach((card) => {
@@ -515,7 +602,6 @@ const modalSnippets = snippets.map((snippet) => ({
       });
 
       const snippetModal = document.querySelector("#snippet-modal");
-      const snippetDataElement = document.querySelector("#snippet-data");
       const modalTitle = document.querySelector("#snippet-modal-title");
       const modalDescription = document.querySelector("#snippet-modal-description");
       const modalCategory = document.querySelector("#snippet-modal-category");
@@ -530,9 +616,6 @@ const modalSnippets = snippets.map((snippet) => ({
       const modalCopy = document.querySelector("#snippet-modal-copy");
       const modalLink = document.querySelector("#snippet-modal-link");
       const modalClose = document.querySelector("[data-modal-close]");
-
-      const snippets = snippetDataElement?.textContent ? JSON.parse(snippetDataElement.textContent) : [];
-      const snippetMap = new Map(snippets.map((snippet) => [snippet.slug, snippet]));
 
       const renderRelatedSnippets = (currentSnippet) => {
         if (!modalRelated || !modalRelatedCount) return;
