@@ -95,6 +95,8 @@ const modalSnippets = snippets.map((snippet) => ({
               <th scope="col" class="px-4 py-3">Title</th>
               <th scope="col" class="px-4 py-3">Category</th>
               <th scope="col" class="px-4 py-3">Type</th>
+              <th scope="col" class="px-4 py-3">Tags</th>
+              <th scope="col" class="px-4 py-3">Preview</th>
               <th scope="col" class="px-4 py-3">Updated</th>
               <th scope="col" class="px-4 py-3"></th>
             </tr>
@@ -116,6 +118,25 @@ const modalSnippets = snippets.map((snippet) => ({
                 <td class="px-4 py-3 font-semibold text-white">{snippet.title}</td>
                 <td class="px-4 py-3 text-indigo-100/90">{snippet.category}</td>
                 <td class="px-4 py-3">{snippet.type}</td>
+                <td class="px-4 py-3">
+                  <div class="flex flex-wrap gap-1.5">
+                    {snippet.tags.slice(0, 3).map((tag) => (
+                      <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-indigo-50 ring-1 ring-white/10">
+                        {tag}
+                      </span>
+                    ))}
+                    {snippet.tags.length > 3 && (
+                      <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-slate-200/70 ring-1 ring-white/10">
+                        +{snippet.tags.length - 3}
+                      </span>
+                    )}
+                  </div>
+                </td>
+                <td class="px-4 py-3">
+                  <p class="line-clamp-1 max-w-[240px] font-mono text-xs text-indigo-100/90">
+                    {snippet.code.split("\n")[0]}
+                  </p>
+                </td>
                 <td class="px-4 py-3 text-slate-300/80">{snippet.updated_at}</td>
                 <td class="px-4 py-3 text-right">
                   <a
