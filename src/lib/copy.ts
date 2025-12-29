@@ -64,6 +64,29 @@ const manualPromptFallback = (text: string) => {
   window.prompt("コピーできない場合は、以下のテキストを選択してコピーしてください", text);
 };
 
+const highlightTimeouts = new WeakMap<HTMLElement, number>();
+
+const highlightCodeBlock = (button: HTMLButtonElement) => {
+  const scope = button.closest<HTMLElement>("[data-copy-scope]") ?? document.body;
+  const target = scope.querySelector<HTMLElement>("[data-copy-highlight]");
+  if (!target) return;
+
+  const existingTimeout = highlightTimeouts.get(target);
+  if (existingTimeout) window.clearTimeout(existingTimeout);
+
+  target.classList.add("ring-2", "ring-emerald-400/60", "bg-emerald-500/10", "shadow-lg", "shadow-emerald-500/20");
+  const timeout = window.setTimeout(() => {
+    target.classList.remove(
+      "ring-2",
+      "ring-emerald-400/60",
+      "bg-emerald-500/10",
+      "shadow-lg",
+      "shadow-emerald-500/20",
+    );
+  }, 2000);
+  highlightTimeouts.set(target, timeout);
+};
+
 const handleCopyClick = async (button: HTMLButtonElement) => {
   const code = button.dataset.copyCode ?? "";
   const label = button.querySelector<HTMLElement>(".copy-label");
@@ -83,6 +106,7 @@ const handleCopyClick = async (button: HTMLButtonElement) => {
   if (copied) {
     if (label) label.textContent = "Copied!";
     button.classList.add("ring", "ring-emerald-300/40");
+    highlightCodeBlock(button);
     showToast("Copied!");
     resetLabel(2000);
     setTimeout(() => {
