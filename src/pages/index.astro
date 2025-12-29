@@ -430,12 +430,16 @@ const modalSnippets = snippets.map((snippet) => ({
         tagText: snippet.tags.join(" ").toLowerCase(),
       }));
 
-      const buildFilterState = () => ({
-        keyword: searchInput?.value.trim().toLowerCase() ?? "",
-        category: categorySelect?.value ?? "",
-        type: typeSelect?.value ?? "",
-        tag: tagSelect?.value.toLowerCase() ?? "",
-      });
+      const buildFilterState = () => {
+        const tagValue = tagSelect?.value ?? "";
+        return {
+          keyword: searchInput?.value.trim().toLowerCase() ?? "",
+          category: categorySelect?.value ?? "",
+          type: typeSelect?.value ?? "",
+          tag: tagValue,
+          tagLower: tagValue.toLowerCase(),
+        };
+      };
 
       const updateSelectOptions = (select, placeholder, options, currentValue) => {
         if (!select) return currentValue;
@@ -464,7 +468,7 @@ const modalSnippets = snippets.map((snippet) => ({
           const keywordMatch = (snippet) =>
             currentState.keyword ? snippet.searchText.includes(currentState.keyword) : true;
           const tagMatch = (snippet) =>
-            currentState.tag ? snippet.tagText.includes(currentState.tag) : true;
+            currentState.tagLower ? snippet.tagText.includes(currentState.tagLower) : true;
           const typeMatch = (snippet) =>
             currentState.type ? snippet.type === currentState.type : true;
           const categoryMatch = (snippet) =>
@@ -480,6 +484,11 @@ const modalSnippets = snippets.map((snippet) => ({
               .filter((snippet) => keywordMatch(snippet) && categoryMatch(snippet) && tagMatch(snippet))
               .map((snippet) => snippet.type),
           );
+          const availableTags = new Set(
+            preparedSnippets
+              .filter((snippet) => keywordMatch(snippet) && categoryMatch(snippet) && typeMatch(snippet))
+              .flatMap((snippet) => snippet.tags),
+          );
 
           const nextCategory = updateSelectOptions(
             categorySelect,
@@ -493,16 +502,23 @@ const modalSnippets = snippets.map((snippet) => ({
             availableTypes,
             currentState.type,
           );
+          const nextTag = updateSelectOptions(tagSelect, "すべてのタグ", availableTags, currentState.tag);
 
           return {
             ...currentState,
             category: nextCategory,
             type: nextType,
+            tag: nextTag,
+            tagLower: nextTag.toLowerCase(),
           };
         };
 
         let nextState = refreshOptions(state);
-        if (nextState.category !== state.category || nextState.type !== state.type) {
+        if (
+          nextState.category !== state.category ||
+          nextState.type !== state.type ||
+          nextState.tag !== state.tag
+        ) {
           nextState = refreshOptions(nextState);
         }
         return nextState;
@@ -510,7 +526,7 @@ const modalSnippets = snippets.map((snippet) => ({
 
       const applyFilters = () => {
         const state = updateFilterOptions(buildFilterState());
-        const { keyword, category, type, tag } = state;
+        const { keyword, category, type, tagLower } = state;
 
         const visibleSnippets = new Set();
         cards.forEach((card) => {
@@ -521,7 +537,7 @@ const modalSnippets = snippets.map((snippet) => ({
             : true;
           const matchesCategory = category ? card.dataset.category === category : true;
           const matchesType = type ? card.dataset.type === type : true;
-          const matchesTag = tag ? card.dataset.tags?.includes(tag) : true;
+          const matchesTag = tagLower ? card.dataset.tags?.includes(tagLower) : true;
           const show = matchesKeyword && matchesCategory && matchesType && matchesTag;
           const display = card.dataset.display ?? "block";
           card.style.display = show ? display : "none";
