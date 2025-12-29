@@ -1,40 +1,77 @@
 # Astro Snippet App
 
-Astro 開発用のコンテナ環境を Docker Compose で立ち上げられるようにしています。`devcontainer.json` は使用せず、VS Code から **Attach to a Running Container** を利用して開発できます。
+CSV で管理するスニペットを Astro で一覧・検索できるシンプルなライブラリアプリです。カテゴリ / タイプ / キーワードのフィルタや、詳細モーダル、テーブル表示を備えています。
 
-## 前提
-- Docker / Docker Compose が利用できること
-- pnpm はコンテナ内で corepack により利用できます
+## 主な機能
+- CSV (`src/data/snippets.csv`) からスニペットを読み込み
+- キーワード・カテゴリ・タイプでのフィルタ検索
+- カード / テーブル表示の切り替え
+- モーダルでスニペット詳細とコードコピー
 
-## 使い方
-
-1. イメージをビルドし、コンテナをバックグラウンドで起動します。
-   ```bash
-   docker compose up -d --build
-   ```
-
-2. VS Code から Remote - Containers 拡張の「Attach to Running Container」を使い、`astro-snippet-app-app-1` コンテナに接続します。
-
-3. コンテナ内シェルで依存関係をインストールします。
+## セットアップ
+### ローカルで起動
+1. 依存関係をインストールします。
    ```bash
    pnpm install
    ```
-
-4. Astro 開発サーバーを起動します（ホストの `localhost:4321` でアクセスできます）。
+2. 開発サーバーを起動します。
    ```bash
+   pnpm dev --host
+   ```
+3. `http://localhost:4321` にアクセスします。
+
+### Docker で起動 (任意)
+1. イメージをビルドし、コンテナを起動します。
+   ```bash
+   docker compose up -d --build
+   ```
+2. VS Code から Remote - Containers 拡張の「Attach to Running Container」で `astro-snippet-app-app-1` に接続します。
+3. コンテナ内で依存関係をインストールし、開発サーバーを起動します。
+   ```bash
+   pnpm install
    pnpm dev --host
    ```
 
 ### ポート
-Astro のデフォルトポート 4321 をコンテナからホストへフォワードしています。必要に応じて `docker-compose.yml` の `ports` 設定を変更してください。
+Astro のデフォルトポート 4321 をコンテナからホストへフォワードしています。必要に応じて `docker-compose.yml` の `ports` を変更してください。
 
-### コンテナの役割
-- イメージには Node.js 20 と Git が含まれています。
-- 起動時はアプリを動かさず、`sleep infinity` で常駐します。
-- リポジトリ全体を `/workspace` に bind mount しているため、ホスト側の変更が即座にコンテナに反映されます。
+## スクリプト
+| コマンド | 内容 |
+| --- | --- |
+| `pnpm dev` | 開発サーバー起動 |
+| `pnpm build` | 本番ビルド |
+| `pnpm preview` | ビルド結果のプレビュー |
 
-### クリーンアップ
-開発が終わったら、次のコマンドでコンテナとネットワークを停止・削除できます。
+## データの編集
+スニペットは `src/data/snippets.csv` で管理しています。項目は以下の通りです。
+
+| カラム | 内容 |
+| --- | --- |
+| `slug` | 詳細ページ用の識別子 |
+| `title` | タイトル |
+| `description` | 説明 |
+| `category` | カテゴリ |
+| `type` | タイプ |
+| `tags` | `;` 区切りのタグ |
+| `code` | コード本文 |
+| `created_at` | 作成日 |
+| `updated_at` | 更新日 |
+
+CSV を更新すると、`src/lib/csv.ts` のローダー経由で一覧・詳細に反映されます。
+
+## ディレクトリ構成
+```
+src/
+  components/   # UI コンポーネント
+  data/         # CSV データ
+  layouts/      # レイアウト
+  lib/          # CSV ローダー等のユーティリティ
+  pages/        # 画面ルーティング
+  styles/       # グローバルスタイル
+```
+
+## クリーンアップ
+Docker を使った開発を終了する場合は、次のコマンドでコンテナとネットワークを停止・削除できます。
 ```bash
 docker compose down
 ```
