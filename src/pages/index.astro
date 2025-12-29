@@ -226,6 +226,22 @@ const modalSnippets = snippets.map((snippet) => ({
         <div id="snippet-modal-tags" class="flex flex-wrap gap-2"></div>
       </div>
 
+      <div class="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-white">タグで再検索</h3>
+          <span class="text-xs text-slate-200/70">クリックで検索条件に追加</span>
+        </div>
+        <div id="snippet-modal-tag-actions" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-white">関連スニペット</h3>
+          <span id="snippet-modal-related-count" class="text-xs text-slate-200/70"></span>
+        </div>
+        <div id="snippet-modal-related" class="grid gap-3 sm:grid-cols-2"></div>
+      </div>
+
       <div class="flex flex-wrap items-center justify-between gap-3 text-sm">
         <p class="text-slate-200/70">詳細ページにもアクセスできます。</p>
         <a
@@ -321,12 +337,87 @@ const modalSnippets = snippets.map((snippet) => ({
       const modalUpdated = document.querySelector("#snippet-modal-updated");
       const modalCode = document.querySelector("#snippet-modal-code");
       const modalTags = document.querySelector("#snippet-modal-tags");
+      const modalTagActions = document.querySelector("#snippet-modal-tag-actions");
+      const modalRelated = document.querySelector("#snippet-modal-related");
+      const modalRelatedCount = document.querySelector("#snippet-modal-related-count");
       const modalCopy = document.querySelector("#snippet-modal-copy");
       const modalLink = document.querySelector("#snippet-modal-link");
       const modalClose = document.querySelector("[data-modal-close]");
 
       const snippets = snippetDataElement?.textContent ? JSON.parse(snippetDataElement.textContent) : [];
       const snippetMap = new Map(snippets.map((snippet) => [snippet.slug, snippet]));
+
+      const renderRelatedSnippets = (currentSnippet) => {
+        if (!modalRelated || !modalRelatedCount) return;
+        const related = snippets
+          .filter((item) => item.slug !== currentSnippet.slug)
+          .map((item) => {
+            const sharedTags = item.tags.filter((tag) => currentSnippet.tags.includes(tag)).length;
+            const sameCategory = item.category === currentSnippet.category ? 1 : 0;
+            return { item, sharedTags, sameCategory };
+          })
+          .filter((entry) => entry.sharedTags > 0 || entry.sameCategory > 0)
+          .sort((a, b) => b.sameCategory - a.sameCategory || b.sharedTags - a.sharedTags)
+          .slice(0, 4)
+          .map((entry) => entry.item);
+
+        modalRelated.innerHTML = "";
+        modalRelatedCount.textContent = related.length ? `${related.length} 件` : "0 件";
+
+        if (related.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "text-xs text-slate-200/70";
+          empty.textContent = "まだ関連スニペットがありません。";
+          modalRelated.appendChild(empty);
+          return;
+        }
+
+        related.forEach((item) => {
+          const link = document.createElement("button");
+          link.type = "button";
+          link.dataset.snippetSlug = item.slug;
+          link.dataset.snippetOpen = "";
+          link.className =
+            "text-left rounded-2xl border border-white/10 bg-slate-950/60 p-4 transition hover:-translate-y-0.5 hover:border-indigo-300/40";
+          link.innerHTML = `
+            <p class="text-[11px] uppercase tracking-[0.2em] text-indigo-200">${item.category}</p>
+            <p class="mt-1 text-sm font-semibold text-white">${item.title}</p>
+            <p class="mt-1 text-xs text-slate-300/80">${item.description}</p>
+            <div class="mt-2 flex flex-wrap gap-2 text-[11px] text-slate-200/70">
+              <span class="rounded-full bg-white/10 px-2.5 py-0.5 ring-1 ring-white/10">${item.type}</span>
+              <span class="rounded-full bg-white/10 px-2.5 py-0.5 ring-1 ring-white/10">更新 ${item.updated_at}</span>
+            </div>
+          `;
+          modalRelated.appendChild(link);
+        });
+      };
+
+      const renderTagActions = (snippet) => {
+        if (!modalTagActions) return;
+        modalTagActions.innerHTML = "";
+        snippet.tags.forEach((tag) => {
+          const tagButton = document.createElement("button");
+          tagButton.type = "button";
+          tagButton.dataset.tagSearch = tag;
+          tagButton.className =
+            "rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-semibold text-white transition hover:border-indigo-200/50 hover:bg-white/20";
+          tagButton.textContent = `#${tag}`;
+          modalTagActions.appendChild(tagButton);
+        });
+      };
+
+      const bindOpenButtons = (root = document) => {
+        const openButtons = Array.from(root.querySelectorAll("[data-snippet-open]"));
+        openButtons.forEach((button) => {
+          if (button.dataset.modalBound === "true") return;
+          button.dataset.modalBound = "true";
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
+            const slug = button.dataset.snippetSlug;
+            if (slug) openModal(slug);
+          });
+        });
+      };
 
       const openModal = (slug) => {
         const snippet = snippetMap.get(slug);
@@ -353,6 +444,10 @@ const modalSnippets = snippets.map((snippet) => ({
           });
         }
 
+        renderTagActions(snippet);
+        renderRelatedSnippets(snippet);
+        bindOpenButtons(snippetModal);
+
         document.body.classList.add("overflow-hidden");
         snippetModal.showModal();
       };
@@ -362,15 +457,19 @@ const modalSnippets = snippets.map((snippet) => ({
         snippetModal.close();
       };
 
-      const openButtons = Array.from(document.querySelectorAll("[data-snippet-open]"));
-      openButtons.forEach((button) => {
-        if (button.dataset.modalBound === "true") return;
-        button.dataset.modalBound = "true";
-        button.addEventListener("click", (event) => {
-          event.preventDefault();
-          const slug = button.dataset.snippetSlug;
-          if (slug) openModal(slug);
-        });
+      bindOpenButtons();
+
+      modalTagActions?.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const tag = target.dataset.tagSearch;
+        if (!tag) return;
+        if (searchInput) {
+          searchInput.value = tag;
+          applyFilters();
+        }
+        closeModal();
+        searchInput?.focus();
       });
 
       modalClose?.addEventListener("click", closeModal);
