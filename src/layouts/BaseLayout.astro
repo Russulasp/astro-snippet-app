@@ -27,9 +27,7 @@ const buildTimestampLabel = buildTimestamp.toLocaleString("ja-JP", { timeZone: "
     </main>
     <footer class="mx-auto max-w-6xl px-6 pb-10">
       <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-200/80">
-        <p class="font-semibold text-white">Astro Snippet Library</p>
-        <p class="mt-2">CSV データを静的ビルドで読み込み、検索・コピーできるミニマル実装です。</p>
-        <p class="mt-4 text-xs text-slate-200/60">Build: {buildTimestampLabel} (JST)</p>
+        <p class="text-xs text-slate-200/60">Build: {buildTimestampLabel} (JST)</p>
       </div>
     </footer>
     <script src={`${import.meta.env.BASE_URL}scripts/copy.client.js`}></script>
