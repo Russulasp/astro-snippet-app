@@ -10,7 +10,6 @@ const withBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^
   data-snippet
   data-title={snippet.title.toLowerCase()}
   data-description={snippet.description.toLowerCase()}
-  data-tags={snippet.tags.join(" ").toLowerCase()}
   data-code={snippet.code.toLowerCase()}
   data-category={snippet.category}
   data-type={snippet.type}
