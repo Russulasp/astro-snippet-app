@@ -142,7 +142,7 @@ const modalSnippets = snippets.map((snippet) => ({
         <table class="w-full min-w-full text-left text-xs text-slate-200/85 sm:text-sm">
           <thead class="bg-white/5 text-[10px] uppercase tracking-[0.2em] text-indigo-200 sm:text-xs">
             <tr>
-              <th scope="col" class="px-3 py-2 sm:px-4 sm:py-3">Title</th>
+              <th scope="col" class="px-3 py-2 sm:px-4 sm:py-3 sm:w-[320px]">Title</th>
               <th scope="col" class="hidden px-4 py-3 sm:table-cell">Category</th>
               <th scope="col" class="hidden px-4 py-3 sm:table-cell">Type</th>
               <th scope="col" class="hidden px-4 py-3 sm:table-cell">Tags</th>
@@ -168,7 +168,7 @@ const modalSnippets = snippets.map((snippet) => ({
                 data-display="table-row"
                 data-copy-scope
               >
-                <td class="px-3 py-2 text-xs font-semibold leading-tight text-white sm:px-4 sm:py-3 sm:text-sm">
+                <td class="px-3 py-2 text-xs font-semibold leading-tight text-white sm:w-[320px] sm:px-4 sm:py-3 sm:text-sm">
                   {snippet.title}
                 </td>
                 <td class="hidden px-4 py-3 text-indigo-100/90 sm:table-cell">{snippet.category}</td>
@@ -189,7 +189,7 @@ const modalSnippets = snippets.map((snippet) => ({
                 </td>
                 <td class="px-3 py-2 sm:px-4 sm:py-3">
                   <p
-                    class="max-w-[160px] whitespace-normal break-words font-mono text-[10px] leading-4 text-indigo-100/90 sm:max-w-[240px] sm:text-xs"
+                    class="max-w-[80px] whitespace-normal break-words font-mono text-[10px] leading-4 text-indigo-100/90 sm:max-w-[120px] sm:text-xs"
                     data-copy-highlight
                   >
                     {snippet.code.split("\n")[0]}
