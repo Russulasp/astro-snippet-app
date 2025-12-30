@@ -26,18 +26,21 @@ const modalSnippets = snippets.map((snippet) => ({
     data-view="card"
   >
     <div class="flex flex-wrap items-center gap-4 group-[data-view=table]:flex-col group-[data-view=table]:items-start sm:group-[data-view=table]:flex-row sm:group-[data-view=table]:items-center">
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-200">Search</p>
-        <h2 class="text-2xl font-bold">スニペット検索</h2>
-      </div>
-      <div class="ml-auto flex flex-wrap items-center gap-3 text-sm text-slate-200/80 group-[data-view=table]:ml-0 group-[data-view=table]:w-full group-[data-view=table]:flex-col group-[data-view=table]:items-start sm:group-[data-view=table]:ml-auto sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:flex-row sm:group-[data-view=table]:items-center">
-        <span class="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10 group-[data-view=table]:w-full group-[data-view=table]:text-center sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:text-left">{snippets.length} 件</span>
+      <div class="flex flex-wrap items-center gap-3 text-sm text-slate-200/80 group-[data-view=table]:w-full group-[data-view=table]:flex-col group-[data-view=table]:items-start sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:flex-row sm:group-[data-view=table]:items-center">
+        <span class="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10 group-[data-view=table]:w-full group-[data-view=table]:text-center sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:text-left">全{snippets.length}件</span>
         <span
           id="result-count"
           class="rounded-full bg-indigo-500/20 px-3 py-1 ring-1 ring-indigo-400/40 group-[data-view=table]:w-full group-[data-view=table]:text-center sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:text-left"
         >
           {snippets.length} 件ヒット
         </span>
+        <button
+          type="button"
+          id="clear-all-filters"
+          class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:border-indigo-200/50 hover:bg-white/20 group-[data-view=table]:w-full sm:group-[data-view=table]:w-auto"
+        >
+          すべての入力をクリア
+        </button>
         <div class="hidden items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 p-1 sm:inline-flex">
           <button
             type="button"
@@ -114,7 +117,7 @@ const modalSnippets = snippets.map((snippet) => ({
       </label>
     </div>
 
-    <div class="grid gap-3 sm:grid-cols-[1fr_2fr]">
+    <div class="grid gap-3">
       <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">↕️</span>
         <select id="sort" class="min-w-0 flex-1 bg-transparent text-sm outline-none">
@@ -126,18 +129,6 @@ const modalSnippets = snippets.map((snippet) => ({
           <option value="title_desc">タイトル Z-A</option>
         </select>
       </label>
-      <p class="flex items-center rounded-xl border border-dashed border-white/10 bg-slate-950/30 px-4 py-2 text-xs text-slate-200/70">
-        カテゴリーやタイプ、並び替えを組み合わせて目的のスニペットを素早く見つけられます。
-      </p>
-    </div>
-    <div class="flex flex-wrap items-center gap-2">
-      <button
-        type="button"
-        id="clear-all-filters"
-        class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:border-indigo-200/50 hover:bg-white/20 group-[data-view=table]:w-full sm:group-[data-view=table]:w-auto"
-      >
-        すべての入力をクリア
-      </button>
     </div>
 
     <div id="snippet-list" class="grid gap-4 sm:grid-cols-2">
