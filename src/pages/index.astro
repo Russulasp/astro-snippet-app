@@ -20,15 +20,24 @@ const modalSnippets = snippets.map((snippet) => ({
 }));
 ---
 <BaseLayout title="Astro Snippet Library" description="CSV から読み込むシンプルなスニペット集">
-  <section class="grid gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 pb-20 shadow-xl shadow-indigo-500/10 sm:pb-6">
-    <div class="flex flex-wrap items-center gap-4">
+  <section
+    class="group grid gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 pb-20 shadow-xl shadow-indigo-500/10 sm:pb-6"
+    data-controls
+    data-view="card"
+  >
+    <div class="flex flex-wrap items-center gap-4 group-[data-view=table]:flex-col group-[data-view=table]:items-start sm:group-[data-view=table]:flex-row sm:group-[data-view=table]:items-center">
       <div>
         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-indigo-200">Search</p>
         <h2 class="text-2xl font-bold">スニペット検索</h2>
       </div>
-      <div class="ml-auto flex flex-wrap items-center gap-3 text-sm text-slate-200/80">
-        <span class="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10">{snippets.length} 件</span>
-        <span id="result-count" class="rounded-full bg-indigo-500/20 px-3 py-1 ring-1 ring-indigo-400/40">{snippets.length} 件ヒット</span>
+      <div class="ml-auto flex flex-wrap items-center gap-3 text-sm text-slate-200/80 group-[data-view=table]:ml-0 group-[data-view=table]:w-full group-[data-view=table]:flex-col group-[data-view=table]:items-start sm:group-[data-view=table]:ml-auto sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:flex-row sm:group-[data-view=table]:items-center">
+        <span class="rounded-full bg-white/10 px-3 py-1 ring-1 ring-white/10 group-[data-view=table]:w-full group-[data-view=table]:text-center sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:text-left">{snippets.length} 件</span>
+        <span
+          id="result-count"
+          class="rounded-full bg-indigo-500/20 px-3 py-1 ring-1 ring-indigo-400/40 group-[data-view=table]:w-full group-[data-view=table]:text-center sm:group-[data-view=table]:w-auto sm:group-[data-view=table]:text-left"
+        >
+          {snippets.length} 件ヒット
+        </span>
         <div class="hidden items-center gap-2 rounded-full border border-white/10 bg-slate-950/60 p-1 sm:inline-flex">
           <button
             type="button"
@@ -125,7 +134,7 @@ const modalSnippets = snippets.map((snippet) => ({
       <button
         type="button"
         id="clear-all-filters"
-        class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:border-indigo-200/50 hover:bg-white/20"
+        class="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:border-indigo-200/50 hover:bg-white/20 group-[data-view=table]:w-full sm:group-[data-view=table]:w-auto"
       >
         すべての入力をクリア
       </button>
@@ -351,6 +360,7 @@ const modalSnippets = snippets.map((snippet) => ({
       const tableList = document.querySelector("#snippet-table");
       const tableBody = document.querySelector("#snippet-table tbody");
       const emptyState = document.querySelector("#empty-state");
+      const controlsSection = document.querySelector("[data-controls]");
       const resetButton = document.querySelector("#reset-filters");
       const clearButtons = Array.from(document.querySelectorAll("[data-clear-field]"));
       const clearAllButton = document.querySelector("#clear-all-filters");
@@ -525,6 +535,7 @@ const modalSnippets = snippets.map((snippet) => ({
       const setView = (view) => {
         cardList?.classList.toggle("hidden", view !== "card");
         tableList?.classList.toggle("hidden", view !== "table");
+        controlsSection?.setAttribute("data-view", view);
         viewButtons.forEach((button) => {
           const isActive = button.dataset.view === view;
           button.setAttribute("aria-pressed", isActive.toString());
