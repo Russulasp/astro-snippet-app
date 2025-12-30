@@ -52,26 +52,26 @@ const modalSnippets = snippets.map((snippet) => ({
       </div>
     </div>
     <div class="grid gap-3 sm:grid-cols-[2fr_1fr_1fr]">
-      <label class="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">🔍</span>
         <input
           id="search"
           type="search"
           placeholder="キーワード (タイトル・説明・コード)"
-          class="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+          class="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
         />
         <button
           type="button"
           data-clear-field="search"
-          class="rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/80 transition hover:border-indigo-200/50 hover:bg-white/20"
+          class="shrink-0 rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/80 transition hover:border-indigo-200/50 hover:bg-white/20"
           aria-label="キーワードをクリア"
         >
           クリア
         </button>
       </label>
-      <label class="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">📁</span>
-        <select id="category" class="w-full bg-transparent text-sm outline-none">
+        <select id="category" class="min-w-0 flex-1 bg-transparent text-sm outline-none">
           <option value="">すべてのカテゴリー</option>
           {categories.map((category) => (
             <option value={category}>{category}</option>
@@ -80,15 +80,15 @@ const modalSnippets = snippets.map((snippet) => ({
         <button
           type="button"
           data-clear-field="category"
-          class="rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/80 transition hover:border-indigo-200/50 hover:bg-white/20"
+          class="shrink-0 rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/80 transition hover:border-indigo-200/50 hover:bg-white/20"
           aria-label="カテゴリーをクリア"
         >
           クリア
         </button>
       </label>
-      <label class="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">🏷️</span>
-        <select id="type" class="w-full bg-transparent text-sm outline-none">
+        <select id="type" class="min-w-0 flex-1 bg-transparent text-sm outline-none">
           <option value="">すべてのタイプ</option>
           {types.map((type) => (
             <option value={type}>{type}</option>
@@ -97,7 +97,7 @@ const modalSnippets = snippets.map((snippet) => ({
         <button
           type="button"
           data-clear-field="type"
-          class="rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/80 transition hover:border-indigo-200/50 hover:bg-white/20"
+          class="shrink-0 rounded-full border border-white/10 bg-white/10 px-2.5 py-1 text-[11px] font-semibold text-white/80 transition hover:border-indigo-200/50 hover:bg-white/20"
           aria-label="タイプをクリア"
         >
           クリア
@@ -106,9 +106,9 @@ const modalSnippets = snippets.map((snippet) => ({
     </div>
 
     <div class="grid gap-3 sm:grid-cols-[1fr_2fr]">
-      <label class="flex items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">↕️</span>
-        <select id="sort" class="w-full bg-transparent text-sm outline-none">
+        <select id="sort" class="min-w-0 flex-1 bg-transparent text-sm outline-none">
           <option value="updated_desc">更新日が新しい順</option>
           <option value="updated_asc">更新日が古い順</option>
           <option value="created_desc">作成日が新しい順</option>
