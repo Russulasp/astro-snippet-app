@@ -21,7 +21,7 @@ const modalSnippets = snippets.map((snippet) => ({
 ---
 <BaseLayout title="Astro Snippet Library" description="CSV から読み込むシンプルなスニペット集">
   <section
-    class="group grid gap-6 rounded-3xl border border-white/10 bg-white/5 p-6 pb-20 shadow-xl shadow-indigo-500/10 sm:pb-6"
+    class="group grid gap-5 rounded-3xl border border-white/10 bg-white/5 p-4 pb-16 shadow-xl shadow-indigo-500/10 sm:gap-6 sm:p-6 sm:pb-6"
     data-controls
     data-view="card"
   >
@@ -64,7 +64,7 @@ const modalSnippets = snippets.map((snippet) => ({
       </div>
     </div>
     <div class="grid gap-3 sm:grid-cols-[2fr_1fr_1fr]">
-      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-2.5 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">🔍</span>
         <input
           id="search"
@@ -81,7 +81,7 @@ const modalSnippets = snippets.map((snippet) => ({
           クリア
         </button>
       </label>
-      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-2.5 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">📁</span>
         <select id="category" class="min-w-0 flex-1 bg-transparent text-sm outline-none">
           <option value="">すべてのカテゴリー</option>
@@ -98,7 +98,7 @@ const modalSnippets = snippets.map((snippet) => ({
           クリア
         </button>
       </label>
-      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-2.5 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">🏷️</span>
         <select id="type" class="min-w-0 flex-1 bg-transparent text-sm outline-none">
           <option value="">すべてのタイプ</option>
@@ -118,7 +118,7 @@ const modalSnippets = snippets.map((snippet) => ({
     </div>
 
     <div class="grid gap-3">
-      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-3 py-2 text-sm text-slate-100 shadow-inner">
+      <label class="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-slate-950/60 px-2.5 py-2 text-sm text-slate-100 shadow-inner">
         <span class="text-indigo-200">↕️</span>
         <select id="sort" class="min-w-0 flex-1 bg-transparent text-sm outline-none">
           <option value="updated_desc">更新日が新しい順</option>

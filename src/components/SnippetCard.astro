@@ -6,7 +6,7 @@ const { snippet } = Astro.props as { snippet: Snippet };
 const withBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
 ---
 <article
-  class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 shadow-lg shadow-indigo-500/10 transition hover:-translate-y-0.5 hover:border-indigo-300/30 hover:shadow-indigo-500/30"
+  class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 shadow-lg shadow-indigo-500/10 transition hover:-translate-y-0.5 hover:border-indigo-300/30 hover:shadow-indigo-500/30"
   data-snippet
   data-title={snippet.title.toLowerCase()}
   data-description={snippet.description.toLowerCase()}

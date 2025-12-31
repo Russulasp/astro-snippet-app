@@ -22,11 +22,11 @@ const buildTimestampLabel = buildTimestamp.toLocaleString("ja-JP", { timeZone: "
   <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
     <div class="pointer-events-none fixed inset-0 -z-10 bg-gradient-to-br from-indigo-900/40 via-slate-900 to-slate-950"></div>
     <div class="pointer-events-none fixed inset-x-10 top-16 -z-10 h-72 rounded-full bg-gradient-to-r from-indigo-600/30 via-fuchsia-500/20 to-cyan-500/30 blur-3xl"></div>
-    <main class="mx-auto flex max-w-6xl flex-col gap-12 px-4 pb-16 pt-10 sm:px-6 sm:pt-14">
+    <main class="mx-auto flex max-w-6xl flex-col gap-8 px-3 pb-14 pt-8 sm:px-5 sm:pt-12">
       <slot />
     </main>
-    <footer class="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-slate-200/80">
+    <footer class="mx-auto max-w-6xl px-3 pb-10 sm:px-5">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-slate-200/80">
         <p class="text-xs text-slate-200/60">Build: {buildTimestampLabel} (JST)</p>
       </div>
     </footer>
