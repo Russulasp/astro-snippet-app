@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { loadSnippets } from "../../lib/csv";
-import type { Snippet } from "../../lib/csv";
+import { loadSnippets } from "../../lib/snippets";
+import type { Snippet } from "../../lib/snippets";
 
-export const getStaticPaths = () => {
-  const snippets = loadSnippets();
+export const getStaticPaths = async () => {
+  const snippets = await loadSnippets();
   return snippets.map((snippet) => ({
     params: { slug: snippet.slug },
     props: { snippet, snippets },

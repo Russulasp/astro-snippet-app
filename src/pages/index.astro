@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import SnippetCard from "../components/SnippetCard.astro";
-import { loadSnippets } from "../lib/csv";
+import { loadSnippets } from "../lib/snippets";
 
-const snippets = loadSnippets();
+const snippets = await loadSnippets();
 const categories = Array.from(new Set(snippets.map((snippet) => snippet.category)));
 const types = Array.from(new Set(snippets.map((snippet) => snippet.type)));
 const withBase = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`;
